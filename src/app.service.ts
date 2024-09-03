@@ -1,9 +1,12 @@
-import { Injectable, Res } from '@nestjs/common';
+import { Injectable, Req, Res } from '@nestjs/common';
+import { Request } from 'express';
 
 @Injectable()
 export class AppService {
-  createWallet(): string {
-    return 'home';
+  
+  determineHomepage(@Req() req: Request): string {
+    // Logic to show signup page or something else
+    return 'index';
   }
 
   getSend(@Res() res): string {
@@ -17,10 +20,5 @@ export class AppService {
     `;
     return res.send(transactionForm);
   }
-
-  getReceive(): string {
-    return 'Receive';
-  }
-
 
 }
