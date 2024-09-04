@@ -1,20 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import path from 'node:path';
 import { join } from 'path';
-import * as nunjucks from 'nunjucks';
-import { AppModule } from './app.module';
+import { fileURLToPath } from 'url';
+import nunjucks from 'nunjucks';
+import { AppModule } from './app.module.js';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
   );
 
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
 
-  // app.useStaticAssets(join(__dirname, '..', 'public'));
-  // app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  // app.setViewEngine('hbs');
-
-  const views = join(__dirname, '..', 'views');
+  const views = path.join(__dirname, '..', 'views');
 
   nunjucks.configure(views, {
     autoescape: true,

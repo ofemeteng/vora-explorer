@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Req, Res, Render } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { WalletService } from './wallet.service';
-import { SendDto } from './dto/send.dto'; // Add this import
+import { WalletService } from './wallet.service.js';
+import { SendDto } from './dto/send.dto.js'; // Add this import
 
 @Controller()
 export class WalletController {

@@ -1,6 +1,6 @@
 import { Req, Res, Injectable } from '@nestjs/common';
 import { Response } from 'express';
-import { SendDto } from './dto/send.dto';
+import { SendDto } from './dto/send.dto.js';
 
 @Injectable()
 export class WalletService {
