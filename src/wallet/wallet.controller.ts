@@ -1,11 +1,13 @@
 import { Controller, Get, Post, Body, Req, Res, Render } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { WalletService } from './wallet.service.js';
+import { UsersService } from '../users/users.service.js';
 import { SendDto } from './dto/send.dto.js'; // Add this import
+import { CreateUserDto } from '../users/dto/create-user.dto.js';
 
 @Controller()
 export class WalletController {
-    constructor(private readonly walletService: WalletService) { }
+    constructor(private readonly walletService: WalletService, private readonly usersService: UsersService) { }
 
     @Get()
     @Render('login')
@@ -23,6 +25,14 @@ export class WalletController {
     @Render('create-wallet')
     getCreateWallet() {
         return  { title: 'Create Wallet' }
+    }
+
+    @Post('create-username-wallet')
+    @Render('create-wallet')
+    async createWallet(@Body() createUserDto: CreateUserDto) {
+        const user =  await this.usersService.create(createUserDto);
+        const username = user.username;
+        return  { title: 'Your Wallet', username: username }
     }
 
     // @Get('create-wallet')

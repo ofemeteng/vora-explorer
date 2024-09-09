@@ -8,7 +8,7 @@ import { AppModule } from './app.module.js';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
-    AppModule,
+    AppModule
   );
 
   const __filename = fileURLToPath(import.meta.url);
