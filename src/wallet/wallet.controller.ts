@@ -24,15 +24,21 @@ export class WalletController {
     @Get('create-wallet')
     @Render('create-wallet')
     getCreateWallet() {
-        return  { title: 'Create Wallet' }
+        return  { title: 'Vora Wallet - Create Wallet' }
+    }
+
+    @Get('home')
+    @Render('home')
+    getHome() {
+        return  { title: 'Vora Wallet - Dashboard' }
     }
 
     @Post('create-username-wallet')
-    @Render('create-wallet')
+    @Render('home')
     async createWallet(@Body() createUserDto: CreateUserDto) {
         const user =  await this.usersService.create(createUserDto);
         const username = user.username;
-        return  { title: 'Your Wallet', username: username }
+        return  { title: 'Vora Wallet - Dashboard', username: username }
     }
 
     // @Get('create-wallet')
@@ -56,17 +62,17 @@ export class WalletController {
         return { balance, address, transactions };
     }
 
-    @Get('wallet/send')
+    @Get('send')
     @Render('send')
     getSend() {
-        return {};
+        return  { title: 'Vora Wallet - Send' };
     }
 
-    @Get('wallet/receive')
+    @Get('receive')
     @Render('receive')
     getReceive() {
         const address = this.walletService.getAddress();
-        return { address };
+        return  { title: 'Vora Wallet - Receive', address: address};
     }
 
     @Get('wallet/transactions')
