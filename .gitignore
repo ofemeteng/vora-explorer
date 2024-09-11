@@ -3,6 +3,8 @@
 /node_modules
 /build
 
+prompts.md
+
 # Logs
 logs
 *.log

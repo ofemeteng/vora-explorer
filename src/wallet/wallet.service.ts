@@ -15,7 +15,7 @@ export class WalletService implements OnModuleInit {
     private adminAddress: AztecAddress;
     private deployedETHTokenContractAddress: AztecAddress;
 
-    constructor(private pxeService: PxeService) {}
+    constructor(private pxeService: PxeService) { }
 
     async onModuleInit() {
         await this.initialize();
@@ -38,14 +38,14 @@ export class WalletService implements OnModuleInit {
             const secretKey = Fr.random();
             const signingPrivateKey = GrumpkinScalar.random();
             const wallet = await getSchnorrAccount(this.pxe, secretKey, signingPrivateKey).waitSetup();
-            
-            let walletDetails = {
+
+            const walletDetails = {
                 address: wallet.getAddress().toString(),
                 signingKey: signingPrivateKey.toString(),
             };
-        
+
             return walletDetails;
-        } catch(error) {
+        } catch (error) {
             this.logger.error('Failed to create Aztec account', error);
             return null;
         }
@@ -63,12 +63,12 @@ export class WalletService implements OnModuleInit {
             this.deployedETHTokenContractAddress = deployedETHTokenContract.address;
 
             this.logger.log(`ETH Token deployed at ${this.deployedETHTokenContractAddress}`);
-        } catch(error) {
+        } catch (error) {
             this.logger.error('Failed to deploy ETH Token', error);
         }
     }
 
-    async mintETHPublic(amount: bigint, recipient: string) {
+    async mintETHPublic(amount: number, recipient: string) {
         try {
             if (!this.deployedETHTokenContractAddress) {
                 throw new Error('ETH Token contract not deployed');
@@ -86,32 +86,129 @@ export class WalletService implements OnModuleInit {
                 amount: amount
             };
             return txDetails;
-        } catch(error) {
+        } catch (error) {
             this.logger.error('Failed to mint ETH Token', error);
             return null;
         }
     }
 
-    send(sendDto: SendDto) {
-        // Logic to send funds
-        return { message: 'Funds sent successfully' };
+    async sendPublic(from_address: string, to_address: string, signingKey: string, amount: bigint, token_address: string): Promise<bigint> {
+        try {
+            if (!this.deployedETHTokenContractAddress) {
+                throw new Error('ETH Token contract not deployed');
+            }
+
+            const _from_address = AztecAddress.fromString(from_address);
+            const _to_address = AztecAddress.fromString(to_address);
+            const _token_address = AztecAddress.fromString(token_address) || this.deployedETHTokenContractAddress;
+
+            const userWallet = await getSchnorrWallet(
+                this.pxe,
+                _from_address,
+                GrumpkinScalar.fromString(signingKey),
+            );
+
+            const contract = await TokenContract.at(_token_address, TokenContractArtifact, userWallet);
+
+            const _tx = await contract.methods.transfer_public(_from_address, _token_address, amount).send().wait();
+
+            const txDetails = {
+                tx: _tx.txHash,
+                from_address: _from_address,
+                to_address: _to_address,
+                amount: amount,
+                token_address: token_address
+            };
+        } catch (error) {
+            this.logger.error('Failed to send the tokens', error);
+            return null;
+        }
     }
 
-    getBalance() {
-        // Logic to get wallet balance
-        return 100; // Example balance
+    async getUserPublicTokenBalance(user_address: string, signingKey: string, token_address: string) {
+        try {
+            if (!this.deployedETHTokenContractAddress) {
+                throw new Error('ETH Token contract not deployed');
+            }
+
+            const _user_address = AztecAddress.fromString(user_address);
+            const _token_address = AztecAddress.fromString(token_address) || this.deployedETHTokenContractAddress;
+
+            const userWallet = await getSchnorrWallet(
+                this.pxe,
+                _user_address,
+                GrumpkinScalar.fromString(signingKey),
+            );
+
+            const contract = await TokenContract.at(_token_address, TokenContractArtifact, userWallet);
+
+            const balance = await contract.methods.balance_of_public(_user_address).view();
+
+            this.logger.log(`Public Balance of ${_user_address}: ${balance}`);
+
+            const balanceDetails = {
+                user_address: _user_address,
+                token_address: _token_address,
+                balance: balance
+            };
+
+            return balanceDetails;
+        } catch (error) {
+            this.logger.error(`Failed to get public token balance for ${user_address}`, error);
+            throw error;
+        }
     }
 
-    getAddress() {
-        // Logic to get wallet address
-        return this.adminAddress.toString();
+    async getUserPrivateTokenBalance(user_address: string, signingKey: string, token_address: string) {
+        try {
+            if (!this.deployedETHTokenContractAddress) {
+                throw new Error('ETH Token contract not deployed');
+            }
+
+            const _user_address = AztecAddress.fromString(user_address);
+            const _token_address = AztecAddress.fromString(token_address) || this.deployedETHTokenContractAddress;
+
+            const userWallet = await getSchnorrWallet(
+                this.pxe,
+                _user_address,
+                GrumpkinScalar.fromString(signingKey),
+            );
+
+            const contract = await TokenContract.at(_token_address, TokenContractArtifact, userWallet);
+
+            const balance = await contract.methods.balance_of_private(_user_address).view();
+
+            this.logger.log(`Private Balance of ${_user_address}: ${balance}`);
+
+            const balanceDetails = {
+                user_address: _user_address,
+                token_address: _token_address,
+                balance: balance
+            };
+
+            return balanceDetails;
+        } catch (error) {
+            this.logger.error(`Failed to get private token balance for ${user_address}`, error);
+            throw error;
+        }
     }
 
-    getTransactions() {
-        // Logic to get wallet transactions
-        return [
-            { id: 1, amount: 50, type: 'sent' },
-            { id: 2, amount: 20, type: 'received' },
-        ]; // Example transactions
+    getAdminAddress() {
+        try {
+            return this.adminAddress.toString();
+        } catch (error) {
+            return { message: 'Admin wallet is not set' };
+        }
+
     }
+
+    getDeployedETHTokenContractAddress() {
+        try {
+            return this.deployedETHTokenContractAddress.toString();
+        } catch (error) {
+            return { message: 'ETH Token Contract is not deployed' };
+        }
+
+    }
+
 }
