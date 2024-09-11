@@ -27,8 +27,19 @@ export class WalletController {
         return  { title: 'Vora Wallet - Dashboard' }
     }
 
-    @Get('deploy-eth')
-    async deployETHToken() {
+    // @Get('deploy-eth')
+    // async deployETHToken() {
+    //     const contract_address =  await this.walletService.deployETHToken();
+    //     if (contract_address) {
+    //         return  { message: 'ETH Deployed successfully', address: contract_address }
+    //     } else {
+    //         return  { message: 'Failed to deploy ETH Token', address: null }
+    //     }
+        
+    // }
+
+    @Get('mint-eth-public')
+    async mintETHPublic() {
         const contract_address =  await this.walletService.deployETHToken();
         if (contract_address) {
             return  { message: 'ETH Deployed successfully', address: contract_address }
