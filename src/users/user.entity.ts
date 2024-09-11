@@ -11,6 +11,9 @@ export class User {
   @Column({ nullable: true })
   address: string | null;
 
+  @Column({ nullable: true })
+  signingKey: string | null;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 

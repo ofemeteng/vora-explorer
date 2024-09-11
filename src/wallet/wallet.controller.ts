@@ -15,12 +15,6 @@ export class WalletController {
         return {};
     }
 
-    @Get('wallet/login')
-    @Render('login')
-    getLogin() {
-        return {};
-    }
-
     @Get('create-wallet')
     @Render('create-wallet')
     getCreateWallet() {
@@ -33,25 +27,33 @@ export class WalletController {
         return  { title: 'Vora Wallet - Dashboard' }
     }
 
+    @Get('deploy-eth')
+    async deployETHToken() {
+        const contract_address =  await this.walletService.deployETHToken();
+        if (contract_address) {
+            return  { message: 'ETH Deployed successfully', address: contract_address }
+        } else {
+            return  { message: 'Failed to deploy ETH Token', address: null }
+        }
+        
+    }
+
     @Post('create-username-wallet')
     @Render('home')
     async createWallet(@Body() createUserDto: CreateUserDto) {
-        const user =  await this.usersService.create(createUserDto);
-        const username = user.username;
-        return  { title: 'Vora Wallet - Dashboard', username: username }
+        const aztecAccount =  await this.walletService.createAztecAccount();
+        if (aztecAccount) {
+            const address = aztecAccount.address;
+            const signingKey = aztecAccount.signingKey;
+            const username = createUserDto.username;
+            await this.usersService.create(username, address, signingKey);
+
+            return  { title: 'Vora Wallet - Dashboard', username: username, address: address }
+        } else {
+            return  { title: 'Vora Wallet - Dashboard', username: null, address: null }
+        }   
     }
 
-    // @Get('create-wallet')
-    // getCreateWallet(@Res() res: Response) {
-    //     const htmlString = this.walletService.createWallet(res);
-    //     return res.send(htmlString);
-    // }
-
-    @Get('wallet/import-wallet')
-    @Render('import-wallet')
-    getImportWallet() {
-        return {};
-    }
 
     @Get('wallet/dashboard')
     @Render('dashboard')
@@ -68,6 +70,11 @@ export class WalletController {
         return  { title: 'Vora Wallet - Send' };
     }
 
+    @Post('send-funds')
+    async send(@Body() sendDto: SendDto) {
+        return this.walletService.send(sendDto);
+    }
+
     @Get('receive')
     @Render('receive')
     getReceive() {
@@ -75,27 +82,11 @@ export class WalletController {
         return  { title: 'Vora Wallet - Receive', address: address};
     }
 
-    @Get('wallet/transactions')
+    @Get('transactions')
     @Render('transactions')
     async getTransactions() {
         const transactions = await this.walletService.getTransactions();
         return { transactions };
     }
 
-    @Get('wallet/explore')
-    @Render('explore')
-    getExplore() {
-        return {};
-    }
-
-
-    @Post('wallet/import')
-    async importWallet(@Body('privateKey') privateKey: string) {
-        return this.walletService.importWallet(privateKey);
-    }
-
-    @Post('wallet/send')
-    async send(@Body() sendDto: SendDto) {
-        return this.walletService.send(sendDto);
-    }
 }
