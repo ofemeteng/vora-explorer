@@ -1,11 +1,11 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { getSchnorrAccount } from '@aztec/accounts/schnorr';
+import { getSchnorrAccount, getSchnorrWallet } from '@aztec/accounts/schnorr';
 import { getDeployedTestAccountsWallets } from "@aztec/accounts/testing";
 import { Fr, GrumpkinScalar } from '@aztec/aztec.js';
 import { TokenContract, TokenContractArtifact } from '@aztec/noir-contracts.js/Token';
 import { SendDto } from './dto/send.dto.js';
 import { PxeService } from '../pxe/pxe.service.js';
-import { AztecAddress, PXE, Wallet } from '@aztec/aztec.js';
+import { AztecAddress, Wallet, PXE } from '@aztec/aztec.js';
 
 @Injectable()
 export class WalletService implements OnModuleInit {
@@ -60,6 +60,7 @@ export class WalletService implements OnModuleInit {
                 'ETH',
                 18
             ).send().deployed();
+
             this.deployedETHTokenContractAddress = deployedETHTokenContract.address;
 
             this.logger.log(`ETH Token deployed at ${this.deployedETHTokenContractAddress}`);
@@ -74,7 +75,7 @@ export class WalletService implements OnModuleInit {
                 throw new Error('ETH Token contract not deployed');
             }
 
-            const contract = await TokenContract.at(this.deployedETHTokenContractAddress, TokenContractArtifact, this.adminWallet);
+            const contract = await TokenContract.at(this.deployedETHTokenContractAddress, this.adminWallet);
             const address = AztecAddress.fromString(recipient);
 
             const _tx = await contract.methods.mint_public(address, amount).send().wait();
@@ -82,7 +83,7 @@ export class WalletService implements OnModuleInit {
 
             const txDetails = {
                 tx: _tx.txHash,
-                recipient: AztecAddress.toString(address),
+                recipient: address,
                 amount: amount
             };
             return txDetails;
@@ -108,9 +109,9 @@ export class WalletService implements OnModuleInit {
                 GrumpkinScalar.fromString(signingKey),
             );
 
-            const contract = await TokenContract.at(_token_address, TokenContractArtifact, userWallet);
+            const contract = await TokenContract.at(_token_address, userWallet);
 
-            const _tx = await contract.methods.transfer_public(_from_address, _token_address, amount).send().wait();
+            const _tx = await contract.methods.transfer_public(_from_address, _token_address, amount, 0).send().wait();
 
             const txDetails = {
                 tx: _tx.txHash,
@@ -140,9 +141,9 @@ export class WalletService implements OnModuleInit {
                 GrumpkinScalar.fromString(signingKey),
             );
 
-            const contract = await TokenContract.at(_token_address, TokenContractArtifact, userWallet);
+            const contract = await TokenContract.at(_token_address, userWallet);
 
-            const balance = await contract.methods.balance_of_public(_user_address).view();
+            const balance = await contract.methods.balance_of_public(_user_address).simulate();
 
             this.logger.log(`Public Balance of ${_user_address}: ${balance}`);
 
@@ -174,9 +175,9 @@ export class WalletService implements OnModuleInit {
                 GrumpkinScalar.fromString(signingKey),
             );
 
-            const contract = await TokenContract.at(_token_address, TokenContractArtifact, userWallet);
+            const contract = await TokenContract.at(_token_address, userWallet);
 
-            const balance = await contract.methods.balance_of_private(_user_address).view();
+            const balance = await contract.methods.balance_of_private(_user_address).simulate();
 
             this.logger.log(`Private Balance of ${_user_address}: ${balance}`);
 
@@ -204,7 +205,8 @@ export class WalletService implements OnModuleInit {
 
     getDeployedETHTokenContractAddress() {
         try {
-            return this.deployedETHTokenContractAddress.toString();
+            return this.deployedETHTokenContractAddress;
+            // return '';
         } catch (error) {
             return { message: 'ETH Token Contract is not deployed' };
         }

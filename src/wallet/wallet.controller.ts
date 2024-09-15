@@ -73,10 +73,10 @@ export class WalletController {
         return { title: 'Vora Wallet - Send' };
     }
 
-    @Post('send-funds')
-    async send(@Body() sendDto: SendDto) {
-        return this.walletService.sendPublic(sendDto);
-    }
+    // @Post('send-funds')
+    // async send(@Body() sendDto: SendDto) {
+    //     return this.walletService.sendPublic(sendDto);
+    // }
 
     @Get('receive')
     @Render('receive')

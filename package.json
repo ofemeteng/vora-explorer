@@ -21,9 +21,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@aztec/accounts": "^0.54.0",
+    "@aztec/accounts": "^0.52.0",
     "@aztec/aztec.js": "^0.52.0",
-    "@aztec/noir-contracts.js": "^0.54.0",
+    "@aztec/noir-contracts.js": "^0.52.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
