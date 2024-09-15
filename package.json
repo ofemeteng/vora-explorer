@@ -30,6 +30,8 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/serve-static": "^4.0.2",
     "@nestjs/typeorm": "^10.0.2",
+    "@simplewebauthn/browser": "^10.0.0",
+    "@simplewebauthn/server": "^10.0.1",
     "dotenv": "^16.4.5",
     "nunjucks": "^3.2.4",
     "pg": "^8.12.0",

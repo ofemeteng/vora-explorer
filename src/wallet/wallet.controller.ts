@@ -1,18 +1,35 @@
 import { Controller, Get, Post, Body, Req, Res, Render } from '@nestjs/common';
 import { Request, Response } from 'express';
+import {
+    generateAuthenticationOptions,
+    generateRegistrationOptions,
+    verifyAuthenticationResponse,
+    verifyRegistrationResponse,
+  } from '@simplewebauthn/server';
+import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/types';
+import { ConfigService } from '@nestjs/config';
 import { WalletService } from './wallet.service.js';
 import { UsersService } from '../users/users.service.js';
+import { Passkey } from '../users/passkey.entity.js';
 import { SendDto } from './dto/send.dto.js';
 import { CreateUserDto } from '../users/dto/create-user.dto.js';
 
 @Controller()
 export class WalletController {
-    constructor(private readonly walletService: WalletService, private readonly usersService: UsersService) { }
+    private readonly rpName: string;
+    private readonly rpID: string;
+    private readonly origin: string;
 
-    @Get()
+    constructor(private readonly walletService: WalletService, private readonly usersService: UsersService, private readonly configService: ConfigService) {
+        this.rpName = this.configService.get<string>('RP_NAME');
+        this.rpID = this.configService.get<string>('RP_ID');
+        this.origin = this.configService.get<string>('ORIGIN');
+    }
+
+    @Get('login')
     @Render('login')
-    getRoot() {
-        return {};
+    login() {
+        return { title: 'Vora Wallet - Login with Passkey' };
     }
 
     @Get('create-wallet')
@@ -27,16 +44,6 @@ export class WalletController {
         return { title: 'Vora Wallet - Dashboard' }
     }
 
-    // @Get('deploy-eth')
-    // async deployETHToken() {
-    //     const contract_address =  await this.walletService.deployETHToken();
-    //     if (contract_address) {
-    //         return  { message: 'ETH Deployed successfully', address: contract_address }
-    //     } else {
-    //         return  { message: 'Failed to deploy ETH Token', address: null }
-    //     }
-
-    // }
 
     @Get('mint-eth-public')
     async mintETHPublic() {

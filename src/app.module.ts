@@ -1,4 +1,4 @@
-import { Module, Injectable } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller.js';
@@ -9,6 +9,7 @@ import { WalletService } from './wallet/wallet.service.js';
 import { UsersService } from './users/users.service.js';
 import { UsersModule } from './users/users.module.js';
 import { User } from './users/user.entity.js';
+import { Passkey } from './users/passkey.entity.js';
 
 
 @Module({
@@ -21,7 +22,7 @@ import { User } from './users/user.entity.js';
       username: configService.get('DATABASE_USERNAME'),
       password: configService.get('DATABASE_PASSWORD'),
       database: configService.get('DATABASE_NAME'),
-      entities: [User],
+      entities: [User, Passkey],
       synchronize: true,
     }),
     inject: [ConfigService],
