@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Req, Res, Render } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Res, Render, Session } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
     generateAuthenticationOptions,
@@ -25,6 +25,7 @@ export class WalletController {
         this.rpID = this.configService.get<string>('RP_ID');
         this.origin = this.configService.get<string>('ORIGIN');
     }
+    
 
     @Get('login')
     @Render('login')
@@ -58,6 +59,23 @@ export class WalletController {
         }
     }
 
+    @Post('generate-registration-options')
+    // @Render('home')
+    async generateRegistrationOptions(@Body() createUserDto: CreateUserDto, @Session() session: Record<string, any>) {
+        const aztecAccount = await this.walletService.createAztecAccount();
+        if (aztecAccount) {
+            const address = aztecAccount.address;
+            const signingKey = aztecAccount.signingKey;
+            // const username = createUserDto.username;
+            // await this.usersService.create(username, address, signingKey);
+            // TODO: Update Address in User Entity
+
+            return { title: 'Vora Wallet - Dashboard', address: address }
+        } else {
+            return { title: 'Vora Wallet - Dashboard', username: null, address: null }
+        }
+    }
+
     // @Post('create-username-wallet')
     // @Render('home')
     // async createWallet(@Body() createUserDto: CreateUserDto) {
@@ -65,10 +83,11 @@ export class WalletController {
     //     if (aztecAccount) {
     //         const address = aztecAccount.address;
     //         const signingKey = aztecAccount.signingKey;
-    //         const username = createUserDto.username;
-    //         await this.usersService.create(username, address, signingKey);
+    //         // const username = createUserDto.username;
+    //         // await this.usersService.create(username, address, signingKey);
+    //         // TODO: Update Address in User Entity
 
-    //         return { title: 'Vora Wallet - Dashboard', username: username, address: address }
+    //         return { title: 'Vora Wallet - Dashboard', address: address }
     //     } else {
     //         return { title: 'Vora Wallet - Dashboard', username: null, address: null }
     //     }
