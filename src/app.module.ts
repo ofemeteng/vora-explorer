@@ -8,9 +8,7 @@ import { WalletController } from './wallet/wallet.controller.js';
 import { WalletService } from './wallet/wallet.service.js';
 import { UsersService } from './users/users.service.js';
 import { UsersModule } from './users/users.module.js';
-import { User } from './users/user.entity.js';
-import { Passkey } from './users/passkey.entity.js';
-
+import { User, Passkey } from './users/user.entity.js';
 
 @Module({
   imports: [ConfigModule.forRoot(), PxeModule, TypeOrmModule.forRootAsync({

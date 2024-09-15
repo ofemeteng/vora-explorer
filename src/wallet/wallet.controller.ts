@@ -10,7 +10,7 @@ import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequest
 import { ConfigService } from '@nestjs/config';
 import { WalletService } from './wallet.service.js';
 import { UsersService } from '../users/users.service.js';
-import { Passkey } from '../users/passkey.entity.js';
+// import { Passkey } from '../users/passkey.entity.js';
 import { SendDto } from './dto/send.dto.js';
 import { CreateUserDto } from '../users/dto/create-user.dto.js';
 
@@ -58,21 +58,21 @@ export class WalletController {
         }
     }
 
-    @Post('create-username-wallet')
-    @Render('home')
-    async createWallet(@Body() createUserDto: CreateUserDto) {
-        const aztecAccount = await this.walletService.createAztecAccount();
-        if (aztecAccount) {
-            const address = aztecAccount.address;
-            const signingKey = aztecAccount.signingKey;
-            const username = createUserDto.username;
-            await this.usersService.create(username, address, signingKey);
+    // @Post('create-username-wallet')
+    // @Render('home')
+    // async createWallet(@Body() createUserDto: CreateUserDto) {
+    //     const aztecAccount = await this.walletService.createAztecAccount();
+    //     if (aztecAccount) {
+    //         const address = aztecAccount.address;
+    //         const signingKey = aztecAccount.signingKey;
+    //         const username = createUserDto.username;
+    //         await this.usersService.create(username, address, signingKey);
 
-            return { title: 'Vora Wallet - Dashboard', username: username, address: address }
-        } else {
-            return { title: 'Vora Wallet - Dashboard', username: null, address: null }
-        }
-    }
+    //         return { title: 'Vora Wallet - Dashboard', username: username, address: address }
+    //     } else {
+    //         return { title: 'Vora Wallet - Dashboard', username: null, address: null }
+    //     }
+    // }
 
     @Get('send')
     @Render('send')
