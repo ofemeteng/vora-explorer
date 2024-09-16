@@ -208,13 +208,41 @@ export class WalletController {
     @Get('send')
     @Render('send')
     async getSend(@Session() session: Record<string, any>) {
-        return { title: 'Vora Wallet - Send' };
+        const username = session.username ? session.username : '';
+
+        const user = await this.usersService.findByUsername(username);
+
+        return { title: 'Vora Wallet - Send', address: user.address };
     }
 
-    // @Post('send-funds')
-    // async send(@Body() sendDto: SendDto) {
-    //     return this.walletService.sendPublic(sendDto);
-    // }
+    @Post('send-funds')
+    @Render('status')
+    async sendPublic(@Body() sendDto: SendDto, @Session() session: Record<string, any>) {
+        const username = session.username ? session.username : '';
+
+        const user = await this.usersService.findByUsername(username);
+
+        const recipient = sendDto.recipient;
+        const amount = sendDto.amount;
+
+        const truncatedRrecipient = recipient.length <= 10 ? recipient : recipient.slice(0, 5) + '...' + recipient.slice(-5);
+
+        const ETHTokenContractAddress = await this.walletService.getDeployedETHTokenContractAddress()
+
+        if (!ETHTokenContractAddress) {
+            return { title: 'Vora Wallet - Status', message: 'Transaction Failed', amount: amount, recipient: truncatedRrecipient, txHash: 'NA', svg_class: 'text-red-500', svg_path: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
+        }
+
+        const ETHTokenContractAddressString = ETHTokenContractAddress.toString()
+
+        const txDetails = await this.walletService.sendPublic(user.address, recipient, user.signingKey, amount, ETHTokenContractAddressString)
+
+        if (txDetails) {
+            return { title: 'Vora Wallet - Status', message: 'Transaction Successful', amount: amount, recipient: truncatedRrecipient, txHash: txDetails.txHash, svg_class: 'text-green-500', svg_path: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }
+        } else {
+            return { title: 'Vora Wallet - Status', message: 'Transaction Failed', amount: amount, recipient: truncatedRrecipient, txHash: 'NA', svg_class: 'text-red-500', svg_path: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
+        }
+    }
 
     @Get('receive')
     @Render('receive')

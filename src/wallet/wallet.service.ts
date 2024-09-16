@@ -89,11 +89,11 @@ export class WalletService implements OnModuleInit {
             return txDetails;
         } catch (error) {
             this.logger.error('Failed to mint ETH Token', error);
-            return null;
+            return false;
         }
     }
 
-    async sendPublic(from_address: string, to_address: string, signingKey: string, amount: bigint, token_address: string): Promise<bigint> {
+    async sendPublic(from_address: string, to_address: string, signingKey: string, amount: number, token_address: string): Promise<any> {
         try {
             if (!this.deployedETHTokenContractAddress) {
                 throw new Error('ETH Token contract not deployed');
@@ -114,15 +114,17 @@ export class WalletService implements OnModuleInit {
             const _tx = await contract.methods.transfer_public(_from_address, _token_address, amount, 0).send().wait();
 
             const txDetails = {
-                tx: _tx.txHash,
+                txHash: _tx.txHash,
                 from_address: _from_address,
                 to_address: _to_address,
                 amount: amount,
                 token_address: token_address
             };
+
+            return txDetails
         } catch (error) {
             this.logger.error('Failed to send the tokens', error);
-            return null;
+            return false;
         }
     }
 
