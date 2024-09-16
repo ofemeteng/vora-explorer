@@ -48,7 +48,6 @@
             });
             if (! resp.ok) {
                 errorJSON = await resp.json();
-                console.log(errorJSON)
                 elemError.innerHTML = errorJSON.message;
                 return
             }

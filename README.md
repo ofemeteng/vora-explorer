@@ -36,6 +36,8 @@ The PXE service runs on the server and utilizes user-scoped sessions for enhance
 - User-scoped sessions for improved security
 - Compatible with various authentication methods and devices
 
+![Receive Flow](./public/images/receive.png)
+
 ## Technology Stack
 
 - [NestJS](https://nestjs.com/): A progressive Node.js framework for building efficient and scalable server-side applications

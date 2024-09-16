@@ -1,6 +1,5 @@
 <div id="content" class="bg-white rounded-lg shadow-md p-6">
     <h2 class="text-xl font-semibold text-gray-700 mb-6">Receive Funds</h2>
-
     <div class="mb-6">
         <label for="asset" class="block text-sm font-medium text-gray-700 mb-2">Select Asset</label>
         <select id="asset" name="asset" class="w-full p-2 bg-gray-100 border border-gray-300 rounded-lg">
@@ -8,52 +7,61 @@
         </select>
     </div>
     <!-- Toast Notification -->
-    <div id="toast" class="fixed top-72 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-md shadow-lg hidden z-50">
+    <div
+        id="toast"
+        class="fixed top-72 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-md shadow-lg hidden
+            z-50">
         Address copied to clipboard!
     </div>
     <div class="mb-6">
         <label class="block text-sm font-medium text-gray-700 mb-2">Your Wallet Address</label>
         <div class="flex items-center">
-            <input type="text" id="wallet-address" value="0x742d35Cc6634C0532925a3b844Bc454e4438f44e" readonly class="w-full p-2 bg-gray-100 border border-gray-300 rounded-lg">
-            <button onclick="copyAddress()" class="ml-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">
-                Copy
+            <input type="text" id="wallet-address" value="{{ address }}" readonly="readonly" class="w-full p-2 bg-gray-100 border border-gray-300 rounded-lg">
+                <button onclick="copyAddress()" class="ml-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">
+                    Copy
+                </button>
+            </div>
+        </div>
+        <div class="flex justify-center mb-6">
+            <div id="qrcode"></div>
+        </div>
+        <p class="text-center text-sm text-gray-600 mb-6">
+            Scan this QR code or use the wallet address above to receive funds.
+        </p>
+        <div class="flex justify-between">
+            <button
+                type="button"
+                class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-full flex-1 mr-2"
+                hx-get="/home"
+                hx-target="#content"
+                hx-swap="outerHTML">
+                Back
+            </button>
+            <button
+                type="button"
+                class="bg-gradient-to-br from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold
+                    py-2 px-4 rounded-full flex-1 ml-2"
+                hx-get="/home"
+                hx-target="#content"
+                hx-swap="outerHTML">
+                Done
             </button>
         </div>
     </div>
-
-    <div class="flex justify-center mb-6">
-        <div id="qrcode"></div>
-    </div>
-
-    <p class="text-center text-sm text-gray-600 mb-6">
-        Scan this QR code or use the wallet address above to receive funds.
-    </p>
-
-    <div class="flex justify-between">
-        <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-full flex-1 mr-2" hx-get="/home" hx-target="#content" hx-swap="outerHTML">
-            Back
-        </button>
-        <button type="button" class="bg-gradient-to-br from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-2 px-4 rounded-full flex-1 ml-2" hx-get="/home" hx-target="#content" hx-swap="outerHTML">
-            Done
-        </button>
-    </div>
-</div>
-<script>
-    function generateQR() {
-        var typeNumber = 0;
-        var errorCorrectionLevel = 'L';
-        var qr = qrcode(typeNumber, errorCorrectionLevel);
-        qr.addData(document.getElementById('wallet-address').value);
-        qr.make();
-        document.getElementById('qrcode').innerHTML = qr.createImgTag(5);
-    }
-
-    document.getElementById('asset').addEventListener('change', function() {
-        // In a real application, you would update the wallet address based on the selected asset
-        // For this example, we'll just regenerate the QR code
+    <script>
+        function generateQR() {
+            var typeNumber = 0;
+            var errorCorrectionLevel = 'L';
+            var qr = qrcode(typeNumber, errorCorrectionLevel);
+            qr.addData(document.getElementById('wallet-address').value);
+            qr.make();
+            document.getElementById('qrcode').innerHTML = qr.createImgTag(5);
+        }
+        document.getElementById('asset').addEventListener('change', function () {
+            // In a real application, you would update the wallet address based on the selected asset For this example, we'll just
+            // regenerate the QR code
+            generateQR();
+        });
+        // Generate QR code on page load
         generateQR();
-    });
-
-    // Generate QR code on page load
-    generateQR();
-</script>
+    </script>

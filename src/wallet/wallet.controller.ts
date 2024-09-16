@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Req, Res, Render, Session, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Res, Render, Session, BadRequestException, NotFoundException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
     generateAuthenticationOptions,
@@ -46,9 +46,17 @@ export class WalletController {
 
         const user = await this.usersService.findByUsername(username);
 
-        // const publicETHBalance = await 
+        const ETHTokenContractAddress = await this.walletService.getDeployedETHTokenContractAddress()
 
-        return { title: 'Vora Wallet - Dashboard', username: user.username, address: user.address }
+        if (!ETHTokenContractAddress) {
+            return { title: 'Vora Wallet - Dashboard', username: user.username, address: user.address, public_eth_balance: 'NA' }
+        }
+
+        const ETHTokenContractAddressString = ETHTokenContractAddress.toString()
+
+        const balanceDetails = await this.walletService.getUserPublicTokenBalance(user.address, user.signingKey, ETHTokenContractAddressString)
+
+        return { title: 'Vora Wallet - Dashboard', username: user.username, address: user.address, public_eth_balance: balanceDetails.balance }
     }
 
 
@@ -199,7 +207,7 @@ export class WalletController {
 
     @Get('send')
     @Render('send')
-    getSend() {
+    async getSend(@Session() session: Record<string, any>) {
         return { title: 'Vora Wallet - Send' };
     }
 
@@ -210,9 +218,12 @@ export class WalletController {
 
     @Get('receive')
     @Render('receive')
-    getReceive() {
-        // const address = this.walletService.getAddress();
-        return { title: 'Vora Wallet - Receive' };
+    async getReceive(@Session() session: Record<string, any>) {
+        const username = session.username ? session.username : '';
+
+        const user = await this.usersService.findByUsername(username);
+
+        return { title: 'Vora Wallet - Receive', address: user.address };
     }
 
 }

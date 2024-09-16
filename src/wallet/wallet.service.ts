@@ -206,9 +206,8 @@ export class WalletService implements OnModuleInit {
     getDeployedETHTokenContractAddress() {
         try {
             return this.deployedETHTokenContractAddress;
-            // return '';
         } catch (error) {
-            return { message: 'ETH Token Contract is not deployed' };
+            return false
         }
 
     }
