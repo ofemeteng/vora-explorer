@@ -11,11 +11,14 @@ export class User {
     @PrimaryGeneratedColumn('uuid')
     uuid: string;
 
-    @Column({ unique: true })
+    @Column({ unique: true, nullable: false })
     username: string;
 
     @Column({ nullable: true })
     address: string | null;
+
+    @Column({ nullable: true })
+    signingKey: string | null;
 
     @Column({ type: 'jsonb', nullable: true })
     currentOptions: any;

@@ -25,8 +25,26 @@ export class UsersService {
 
     }
 
+    async updateUserAddressDetails(username: string, address: string, signingKey: string): Promise<User> {
+        const user = await this.usersRepository.findOne({ where: { username: username } });
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        user.address = address;
+        user.signingKey = signingKey;
+        return await this.usersRepository.save(user);
+    }
+
     async findByUsername(username: string): Promise<User> {
-        return await this.usersRepository.findOne({ where: { username: username } });
+        const user = await this.usersRepository.findOne({ where: { username: username } });
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        return user;
     }
 
     async setCurrentOptions(username: string, options: any): Promise<void> {
