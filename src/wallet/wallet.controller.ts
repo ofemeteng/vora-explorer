@@ -61,16 +61,32 @@ export class WalletController {
 
 
     @Get('mint-eth-public')
-    async mintETHPublic() {
-        const contract_address = this.walletService.getDeployedETHTokenContractAddress();
-        if (contract_address) {
-            const amount = 100;
-            const recipient = ''
-            const txDetails = await this.walletService.mintETHPublic(amount, recipient);
-            return { message: 'ETH minted successfully', txDetails: txDetails }
-        } else {
-            return { message: 'Failed to deploy ETH Token', address: null }
+    @Render('status')
+    async mintETHPublic(@Session() session: Record<string, any>) {
+        const username = session.username ? session.username : '';
+
+        const user = await this.usersService.findByUsername(username);
+        const recipient = user.address
+
+        const amount = 100;
+
+        const truncatedRecipient = recipient.length <= 10 ? recipient : recipient.slice(0, 5) + '...' + recipient.slice(-5);
+
+
+        const ETHTokenContractAddress = await this.walletService.getDeployedETHTokenContractAddress()
+
+        if (!ETHTokenContractAddress) {
+            return { title: 'Vora Wallet - Status', message: 'Transaction Failed', amount: amount, recipient: truncatedRecipient, txHash: 'NA', svg_class: 'text-red-500', svg_path: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
         }
+
+        const txDetails = await this.walletService.mintETHPublic(amount, recipient)
+
+        if (txDetails) {
+            return { title: 'Vora Wallet - Status', message: 'Transaction Successful', amount: amount, recipient: truncatedRecipient, txHash: txDetails.txHash, svg_class: 'text-green-500', svg_path: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }
+        } else {
+            return { title: 'Vora Wallet - Status', message: 'Transaction Failed', amount: amount, recipient: truncatedRecipient, txHash: 'NA', svg_class: 'text-red-500', svg_path: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
+        }
+
     }
 
     @Post('generate-registration-options')
@@ -225,12 +241,12 @@ export class WalletController {
         const recipient = sendDto.recipient;
         const amount = sendDto.amount;
 
-        const truncatedRrecipient = recipient.length <= 10 ? recipient : recipient.slice(0, 5) + '...' + recipient.slice(-5);
+        const truncatedRecipient = recipient.length <= 10 ? recipient : recipient.slice(0, 5) + '...' + recipient.slice(-5);
 
         const ETHTokenContractAddress = await this.walletService.getDeployedETHTokenContractAddress()
 
         if (!ETHTokenContractAddress) {
-            return { title: 'Vora Wallet - Status', message: 'Transaction Failed', amount: amount, recipient: truncatedRrecipient, txHash: 'NA', svg_class: 'text-red-500', svg_path: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
+            return { title: 'Vora Wallet - Status', message: 'Transaction Failed', amount: amount, recipient: truncatedRecipient, txHash: 'NA', svg_class: 'text-red-500', svg_path: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
         }
 
         const ETHTokenContractAddressString = ETHTokenContractAddress.toString()
@@ -238,9 +254,9 @@ export class WalletController {
         const txDetails = await this.walletService.sendPublic(user.address, recipient, user.signingKey, amount, ETHTokenContractAddressString)
 
         if (txDetails) {
-            return { title: 'Vora Wallet - Status', message: 'Transaction Successful', amount: amount, recipient: truncatedRrecipient, txHash: txDetails.txHash, svg_class: 'text-green-500', svg_path: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }
+            return { title: 'Vora Wallet - Status', message: 'Transaction Successful', amount: amount, recipient: truncatedRecipient, txHash: txDetails.txHash, svg_class: 'text-green-500', svg_path: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }
         } else {
-            return { title: 'Vora Wallet - Status', message: 'Transaction Failed', amount: amount, recipient: truncatedRrecipient, txHash: 'NA', svg_class: 'text-red-500', svg_path: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
+            return { title: 'Vora Wallet - Status', message: 'Transaction Failed', amount: amount, recipient: truncatedRecipient, txHash: 'NA', svg_class: 'text-red-500', svg_path: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
         }
     }
 

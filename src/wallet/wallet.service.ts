@@ -82,7 +82,7 @@ export class WalletService implements OnModuleInit {
             this.logger.log(`Minted ${amount} ETH to ${address}`);
 
             const txDetails = {
-                tx: _tx.txHash,
+                txHash: _tx.txHash,
                 recipient: address,
                 amount: amount
             };
