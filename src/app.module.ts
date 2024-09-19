@@ -6,6 +6,8 @@ import { PxeModule } from './pxe/pxe.module.js';
 import { AppService } from './app.service.js';
 import { WalletController } from './wallet/wallet.controller.js';
 import { WalletService } from './wallet/wallet.service.js';
+import { IndexerController } from './indexer/indexer.controller.js';
+import { IndexerService } from './indexer/indexer.service.js';
 import { UsersService } from './users/users.service.js';
 import { UsersModule } from './users/users.module.js';
 import { User, Passkey } from './users/user.entity.js';
@@ -25,11 +27,11 @@ import { User, Passkey } from './users/user.entity.js';
     }),
     inject: [ConfigService],
   }), UsersModule],
-  controllers: [AppController, WalletController],
-  providers: [ConfigService, AppService, WalletService, UsersService],
+  controllers: [AppController, WalletController, IndexerController],
+  providers: [ConfigService, AppService, WalletService, IndexerService, UsersService],
 })
 
-export class AppModule {}
+export class AppModule { }
 
 
 
