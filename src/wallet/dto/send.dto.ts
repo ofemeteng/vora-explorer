@@ -1,4 +1,9 @@
+import { IsString, IsNumberString } from 'class-validator';
+
 export class SendDto {
+    @IsString()
     recipient: string;
-    amount: number;
+
+    @IsNumberString()
+    amount: string;
 }

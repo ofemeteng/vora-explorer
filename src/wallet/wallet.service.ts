@@ -111,7 +111,7 @@ export class WalletService implements OnModuleInit {
 
             const contract = await TokenContract.at(_token_address, userWallet);
 
-            const _tx = await contract.methods.transfer_public(_from_address, _token_address, amount, 0).send().wait();
+            const _tx = await contract.methods.transfer_public(_from_address, _to_address, amount, 0).send().wait();
 
             const txDetails = {
                 txHash: _tx.txHash,

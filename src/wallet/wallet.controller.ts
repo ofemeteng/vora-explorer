@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Req, Res, Render, Session, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Res, Render, Session, BadRequestException, NotFoundException, ValidationPipe } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
     generateAuthenticationOptions,
@@ -114,7 +114,7 @@ export class WalletController {
                 residentKey: 'preferred',
                 userVerification: 'preferred',
                 // Optional
-                authenticatorAttachment: 'cross-platform',
+                authenticatorAttachment: 'platform',
             },
         });
 
@@ -233,13 +233,13 @@ export class WalletController {
 
     @Post('send-funds')
     @Render('status')
-    async sendPublic(@Body() sendDto: SendDto, @Session() session: Record<string, any>) {
+    async sendPublic(@Body(new ValidationPipe()) sendDto: SendDto, @Session() session: Record<string, any>) {
         const username = session.username ? session.username : '';
 
         const user = await this.usersService.findByUsername(username);
 
         const recipient = sendDto.recipient;
-        const amount = sendDto.amount;
+        const amount = parseFloat(sendDto.amount);
 
         const truncatedRecipient = recipient.length <= 10 ? recipient : recipient.slice(0, 5) + '...' + recipient.slice(-5);
 
