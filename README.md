@@ -5,9 +5,9 @@ This README provides documentation for the Aztrack - Aztec L2 Blockchain Indexer
 The relevant code for the indexer is in `src/indexer`.
 The codebase is an extension of the code from [Vora Wallet](https://github.com/ofemeteng/vora-wallet)
 
-## Base URL
+## Swagger API Docs
 
-The base URL for all API endpoints is:
+The Swagger/OpenAPI docs for the Aztrack Indexer API can be accessed via the URL below:
 
 ```
 http://localhost:3000/api
@@ -21,7 +21,7 @@ http://localhost:3000/api
 
 Retrieves the current block number on the Aztec L2 blockchain.
 
-- **URL:** `/get-current-block-number`
+- **URL:** `/v1/get-current-block-number`
 - **Method:** GET
 - **Response:**
   ```json
@@ -36,7 +36,7 @@ Retrieves the current block number on the Aztec L2 blockchain.
 
 Retrieves a specific block by its block number.
 
-- **URL:** `/get-block/:blockNumber`
+- **URL:** `/v1/get-block/:blockNumber`
 - **Method:** GET
 - **Parameters:**
   - `blockNumber`: The number of the block to retrieve
@@ -53,7 +53,7 @@ Retrieves a specific block by its block number.
 
 Retrieves blocks within a specified range of block numbers.
 
-- **URL:** `/get-blocks/from/:fromBlock/to/:toBlock`
+- **URL:** `/v1/get-blocks/from/:fromBlock/to/:toBlock`
 - **Method:** GET
 - **Parameters:**
   - `fromBlock`: The starting block number
@@ -73,7 +73,7 @@ Retrieves blocks within a specified range of block numbers.
 
 Retrieves a transaction receipt for a given transaction hash.
 
-- **URL:** `/get-transaction-receipt-by-txhash/:txHash`
+- **URL:** `/v1/get-transaction-receipt-by-txhash/:txHash`
 - **Method:** GET
 - **Parameters:**
   - `txHash`: The hash of the transaction
@@ -90,7 +90,7 @@ Retrieves a transaction receipt for a given transaction hash.
 
 Retrieves a transaction for a given transaction hash.
 
-- **URL:** `/get-transaction-by-txhash/:txHash`
+- **URL:** `/v1/get-transaction-by-txhash/:txHash`
 - **Method:** GET
 - **Parameters:**
   - `txHash`: The hash of the transaction
@@ -107,7 +107,7 @@ Retrieves a transaction for a given transaction hash.
 
 Retrieves all transactions in a specific block.
 
-- **URL:** `/get-transactions-in-block/:blockNumber`
+- **URL:** `/v1/get-transactions-in-block/:blockNumber`
 - **Method:** GET
 - **Parameters:**
   - `blockNumber`: The number of the block
@@ -124,7 +124,7 @@ Retrieves all transactions in a specific block.
 
 Retrieves transactions within a specified range of block numbers.
 
-- **URL:** `/get-transactions/from/:fromBlock/to/:toBlock`
+- **URL:** `/v1/get-transactions/from/:fromBlock/to/:toBlock`
 - **Method:** GET
 - **Parameters:**
   - `fromBlock`: The starting block number
@@ -144,7 +144,7 @@ Retrieves transactions within a specified range of block numbers.
 
 Retrieves a contract instance given its address.
 
-- **URL:** `/get-contract-by-address/:address`
+- **URL:** `/v1/get-contract-by-address/:address`
 - **Method:** GET
 - **Parameters:**
   - `address`: The address of the contract
@@ -161,7 +161,7 @@ Retrieves a contract instance given its address.
 
 Retrieves the addresses of all contracts added to the PXE Service.
 
-- **URL:** `/get-contracts`
+- **URL:** `/v1/get-contracts`
 - **Method:** GET
 - **Response:**
   ```json
